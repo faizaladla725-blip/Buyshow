@@ -3,167 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JKT48 Theater & Membership Admin</title>
+    <title>JKT48 Theater - Light Edition</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4; padding: 20px; }
-        .container { max-width: 450px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; }
-        h2 { color: #e10000; text-align: center; border-bottom: 2px solid #e10000; padding-bottom: 10px; }
-        label { display: block; margin: 15px 0 5px; font-weight: bold; font-size: 14px; }
-        input, select, button { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        
-        .btn-wa { background-color: #25d366; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .btn-wa:hover { background-color: #128c7e; }
+        :root {
+            --jkt-red: #e10000;
+            --jkt-pink: #fff0f0;
+            --jkt-text: #333;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
 
-        /* Style Panel Admin */
-        #adminSection { display: none; margin-top: 30px; border: 2px solid #e10000; padding: 15px; border-radius: 10px; background: #fffafa; }
-        .admin-controls { display: flex; gap: 5px; margin-bottom: 10px; }
-        .btn-add { background-color: #007bff; color: white; border: none; cursor: pointer; font-size: 12px; padding: 8px; }
-        .btn-save { background-color: #e10000; color: white; border: none; cursor: pointer; font-weight: bold; }
-        .btn-lock { background-color: #555; color: white; border: none; font-size: 12px; cursor: pointer; margin-top: 20px; border-radius: 8px; }
-        .show-item { display: flex; gap: 5px; margin-bottom: 5px; }
-        .btn-del { background-color: #ff4444; color: white; border: none; width: 40px; cursor: pointer; border-radius: 5px; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #ffffff 0%, #ffebeb 100%);
+            color: var(--jkt-text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container { 
+            max-width: 420px; 
+            width: 100%;
+            background: white; 
+            padding: 30px; 
+            border-radius: 25px; 
+            box-shadow: var(--shadow);
+            border: 1px solid #f0f0f0;
+        }
+
+        h2 { 
+            color: var(--jkt-red); 
+            text-align: center; 
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+        }
+
+        .sub-title {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        label { 
+            display: block; 
+            margin: 15px 0 5px; 
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 14px; 
+            background: #f9f9f9;
+            border: 2px solid #eee; 
+            border-radius: 12px; 
+            color: #333;
+            font-size: 15px;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--jkt-red);
+            background: white;
+            outline: none;
+        }
+
+        .price-tag { 
+            background: var(--jkt-pink);
+            color: var(--jkt-red); 
+            padding: 15px; 
+            border-radius: 15px; 
+            text-align: center; 
+            font-weight: 800; 
+            font-size: 22px; 
+            margin: 20px 0;
+            cursor: pointer;
+            border: 2px dashed var(--jkt-red);
+            transition: 0.2s;
+        }
+
+        .price-tag:hover { transform: translateY(-2px); background: #ffe5e5; }
+
+        .btn-wa { 
+            background-color: var(--jkt-red); 
+            color: white; 
+            border: none; 
+            padding: 16px;
+            border-radius: 15px;
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 16px;
+            width: 100%;
+            box-shadow: 0 6px 20px rgba(225, 0, 0, 0.2);
+            transition: 0.3s;
+        }
+
+        .btn-wa:hover { 
+            background-color: #c00000;
+            transform: scale(1.02);
+        }
+
+        /* Modal QRIS */
+        #qrisModal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); }
+        .modal-content { background: #fff; margin: 15% auto; padding: 25px; width: 80%; max-width: 300px; border-radius: 25px; text-align: center; box-shadow: var(--shadow); }
+        .modal-content img { width: 100%; border-radius: 15px; }
+
+        .admin-btn { background: none; border: none; color: #bbb; font-size: 10px; cursor: pointer; margin-top: 20px; width: 100%; }
+
+        #adminSection { 
+            display: none; margin-top: 20px; padding: 15px; background: #fefefe; border-radius: 15px; border: 1px solid #ddd; 
+        }
+        .show-item { display: flex; gap: 5px; margin-bottom: 8px; }
+        .btn-del { background: #ff4444; border: none; color: white; border-radius: 8px; cursor: pointer; padding: 0 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>JKT48 Registration</h2>
+    <h2>JKT48 THEATER</h2>
+    <div class="sub-title">Registration Form 2026</div>
     
     <form id="regForm">
-        <label>Nama Lengkap</label>
-        <input type="text" id="nama" placeholder="Nama sesuai ID" required>
+        <label>NAMA LENGKAP</label>
+        <input type="text" id="nama" placeholder="Masukkan nama Anda" required>
 
-        <label>Nomor WhatsApp</label>
+        <label>NOMOR WHATSAPP</label>
         <input type="number" id="wa" placeholder="08xxxxxxxxxx" required>
 
-        <label>Pilih Show / Paket</label>
-        <select id="showSelect">
+        <label>PILIH EVENT</label>
+        <select id="showSelect" onchange="updatePriceDisplay()">
             </select>
 
-        <button type="button" class="btn-wa" onclick="kirimWA()">Beli / Daftar Sekarang</button>
+        <label>TOTAL PEMBAYARAN</label>
+        <div id="priceDisplay" class="price-tag" onclick="bukaQRIS()">Rp 0</div>
+
+        <label>BUKTI TRANSFER (FOTO)</label>
+        <input type="file" id="bukti" style="border:none; padding: 0; background:none;">
+
+        <button type="button" class="btn-wa" onclick="kirimWA()">BELI TIKET SEKARANG</button>
     </form>
 
-    <button class="btn-lock" onclick="aksesAdmin()">🔒 Kelola Daftar Show (Admin Only)</button>
+    <button class="admin-btn" onclick="aksesAdmin()">Admin Settings</button>
+
+    <div id="qrisModal">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:var(--jkt-red);">Scan QRIS</h3>
+            <img id="qrisImg" src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg">
+            <button onclick="tutupQRIS()" style="background:#f4f4f4; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; margin-top:10px;">Tutup</button>
+        </div>
+    </div>
 
     <div id="adminSection">
-        <h4 style="margin:0 0 10px 0; color:#e10000;">Pengaturan Daftar Show</h4>
-        
-        <div id="adminInputList">
-            </div>
-
-        <button class="btn-add" onclick="tambahInputShow()">+ Tambah Baris Show</button>
-        <hr>
-        <button class="btn-save" onclick="simpanDanUpdate()">Simpan & Terapkan</button>
-        <button style="background:#ccc; border:none; padding:8px; border-radius:5px; cursor:pointer;" onclick="tutupAdmin()">Batal</button>
+        <h4 style="margin:0 0 10px 0; font-size: 14px; color: var(--jkt-red);">Admin Panel</h4>
+        <input type="text" id="editQrisUrl" placeholder="Link Gambar QRIS" style="font-size: 12px; margin-bottom:10px;">
+        <div id="adminInputList"></div>
+        <button onclick="tambahBaris()" style="background:#eee; border:none; padding:8px; font-size:11px; margin-bottom:10px; cursor:pointer; border-radius:8px; width:100%;">+ Tambah Show Baru</button>
+        <button onclick="simpanAdmin()" style="background:var(--jkt-red); color:white; border:none; padding:12px; font-weight:bold; cursor:pointer; border-radius:12px; width:100%;">SIMPAN DATA</button>
     </div>
 </div>
 
 <script>
     const PASS_ADMIN = "admin123";
-    // Data awal show
-    let daftarShow = [
-        "Z VS ALPA",
-        "JKT48 SCHOOL",
-        "SELEKSI PMDK 2026",
-        "ANDAI KU BUKAN IDOLA",
-        "JKT48 FIGHT: LOVE DREAM PASSION",
-        "BUY MEMBERSHIP SPECIAL RAMADAN (1 BULAN)"
+    let qrisUrl = "https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg"; 
+    let dataShow = [
+        { nama: "Z VS ALPA", harga: "12.000" },
+        { nama: "JKT48 SCHOOL", harga: "12.000" },
+        { nama: "SELEKSI PMDK 2026", harga: "12.000" },
+        { nama: "MEMBERSHIP RAMADAN", harga: "27.000" }
     ];
 
-    // Fungsi menampilkan pilihan di Dropdown User
     function renderUserSelect() {
         const select = document.getElementById('showSelect');
         select.innerHTML = "";
-        daftarShow.forEach(show => {
+        dataShow.forEach((item, index) => {
             let opt = document.createElement('option');
-            opt.value = show;
-            opt.innerHTML = show;
+            opt.value = index;
+            opt.innerHTML = item.nama;
             select.appendChild(opt);
         });
+        updatePriceDisplay();
     }
 
-    // Fungsi menampilkan list edit di Panel Admin
+    function updatePriceDisplay() {
+        const index = document.getElementById('showSelect').value;
+        const harga = dataShow[index] ? dataShow[index].harga : "0";
+        document.getElementById('priceDisplay').innerHTML = `Rp ${harga}`;
+    }
+
+    function bukaQRIS() { document.getElementById('qrisModal').style.display = 'block'; }
+    function tutupQRIS() { document.getElementById('qrisModal').style.display = 'none'; }
+
     function renderAdminList() {
         const container = document.getElementById('adminInputList');
+        document.getElementById('editQrisUrl').value = qrisUrl;
         container.innerHTML = "";
-        daftarShow.forEach((show, index) => {
+        dataShow.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'show-item';
-            div.innerHTML = `
-                <input type="text" value="${show}" class="input-show-name">
-                <button class="btn-del" onclick="hapusShow(${index})">X</button>
-            `;
+            div.innerHTML = `<input type="text" value="${item.nama}" class="edit-nama" style="font-size:11px;"><input type="text" value="${item.harga}" class="edit-harga" style="width:70px; font-size:11px;"><button class="btn-del" onclick="this.parentElement.remove()">X</button>`;
             container.appendChild(div);
         });
     }
 
-    function tambahInputShow() {
+    function tambahBaris() {
         const container = document.getElementById('adminInputList');
         const div = document.createElement('div');
         div.className = 'show-item';
-        div.innerHTML = `
-            <input type="text" placeholder="Nama show baru..." class="input-show-name">
-            <button class="btn-del" onclick="this.parentElement.remove()">X</button>
-        `;
+        div.innerHTML = `<input type="text" class="edit-nama"><input type="text" class="edit-harga" style="width:70px;"><button class="btn-del" onclick="this.parentElement.remove()">X</button>`;
         container.appendChild(div);
     }
 
-    function hapusShow(index) {
-        daftarShow.splice(index, 1);
-        renderAdminList();
-    }
-
-    function simpanDanUpdate() {
-        const inputs = document.querySelectorAll('.input-show-name');
-        let dataBaru = [];
-        inputs.forEach(input => {
-            if(input.value.trim() !== "") {
-                dataBaru.push(input.value.trim());
-            }
-        });
-        daftarShow = dataBaru;
+    function simpanAdmin() {
+        const namaInputs = document.querySelectorAll('.edit-nama');
+        const hargaInputs = document.querySelectorAll('.edit-harga');
+        let newData = [];
+        namaInputs.forEach((input, i) => { if(input.value) newData.push({ nama: input.value, harga: hargaInputs[i].value }); });
+        dataShow = newData;
+        qrisUrl = document.getElementById('editQrisUrl').value;
+        document.getElementById('qrisImg').src = qrisUrl;
         renderUserSelect();
-        alert("Daftar show berhasil diperbarui!");
-        tutupAdmin();
+        document.getElementById('adminSection').style.display = 'none';
+        alert("Berhasil diperbarui!");
     }
 
     function aksesAdmin() {
-        let pass = prompt("Masukkan Password Admin:");
-        if (pass === PASS_ADMIN) {
+        if (prompt("PASSWORD ADMIN:") === PASS_ADMIN) {
             document.getElementById('adminSection').style.display = 'block';
             renderAdminList();
-        } else {
-            alert("Password Salah!");
         }
-    }
-
-    function tutupAdmin() {
-        document.getElementById('adminSection').style.display = 'none';
     }
 
     function kirimWA() {
         const nama = document.getElementById('nama').value;
-        const noHP = document.getElementById('wa').value;
-        const show = document.getElementById('showSelect').value;
-        const noAdmin = "6287722195260"; // Ganti ke nomor WA-mu
+        const waUser = document.getElementById('wa').value;
+        const index = document.getElementById('showSelect').value;
+        const item = dataShow[index];
+        const noAdmin = "6287722195260"; 
 
-        if(!nama || !noHP) {
-            alert("Isi data dulu!");
-            return;
-        }
+        if(!nama || !waUser) return alert("Mohon lengkapi data!");
 
-        const pesan = `Halo Admin, saya mau pesan:%0A%0A` +
-                      `*Nama:* ${nama}%0A` +
-                      `*No. WA:* ${noHP}%0A` +
-                      `*Pesanan:* ${show}%0A%0A` +
-                      `Mohon diproses segera!`;
+        const pesan = `*REGISTRASI THEATER*%0A` +
+                      `Nama: ${nama}%0A` +
+                      `WA: ${waUser}%0A` +
+                      `Event: ${item.nama}%0A` +
+                      `Total: Rp ${item.harga}%0A%0A` +
+                      `Saya sudah scan QRIS, mohon diproses!`;
 
         window.open(`https://wa.me/${noAdmin}?text=${pesan}`, '_blank');
     }
 
-    // Inisialisasi awal
     renderUserSelect();
 </script>
 
 </body>
-</html>
+    </html>
