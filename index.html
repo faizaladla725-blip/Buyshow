@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JKT48 Theater & Membership Admin</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .container { max-width: 450px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; }
+        h2 { color: #e10000; text-align: center; border-bottom: 2px solid #e10000; padding-bottom: 10px; }
+        label { display: block; margin: 15px 0 5px; font-weight: bold; font-size: 14px; }
+        input, select, button { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        
+        .btn-wa { background-color: #25d366; color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .btn-wa:hover { background-color: #128c7e; }
+
+        /* Style Panel Admin */
+        #adminSection { display: none; margin-top: 30px; border: 2px solid #e10000; padding: 15px; border-radius: 10px; background: #fffafa; }
+        .admin-controls { display: flex; gap: 5px; margin-bottom: 10px; }
+        .btn-add { background-color: #007bff; color: white; border: none; cursor: pointer; font-size: 12px; padding: 8px; }
+        .btn-save { background-color: #e10000; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .btn-lock { background-color: #555; color: white; border: none; font-size: 12px; cursor: pointer; margin-top: 20px; border-radius: 8px; }
+        .show-item { display: flex; gap: 5px; margin-bottom: 5px; }
+        .btn-del { background-color: #ff4444; color: white; border: none; width: 40px; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>JKT48 Registration</h2>
+    
+    <form id="regForm">
+        <label>Nama Lengkap</label>
+        <input type="text" id="nama" placeholder="Nama sesuai ID" required>
+
+        <label>Nomor WhatsApp</label>
+        <input type="number" id="wa" placeholder="08xxxxxxxxxx" required>
+
+        <label>Pilih Show / Paket</label>
+        <select id="showSelect">
+            </select>
+
+        <button type="button" class="btn-wa" onclick="kirimWA()">Beli / Daftar Sekarang</button>
+    </form>
+
+    <button class="btn-lock" onclick="aksesAdmin()">🔒 Kelola Daftar Show (Admin Only)</button>
+
+    <div id="adminSection">
+        <h4 style="margin:0 0 10px 0; color:#e10000;">Pengaturan Daftar Show</h4>
+        
+        <div id="adminInputList">
+            </div>
+
+        <button class="btn-add" onclick="tambahInputShow()">+ Tambah Baris Show</button>
+        <hr>
+        <button class="btn-save" onclick="simpanDanUpdate()">Simpan & Terapkan</button>
+        <button style="background:#ccc; border:none; padding:8px; border-radius:5px; cursor:pointer;" onclick="tutupAdmin()">Batal</button>
+    </div>
+</div>
+
+<script>
+    const PASS_ADMIN = "admin123";
+    // Data awal show
+    let daftarShow = [
+        "Z VS ALPA",
+        "JKT48 SCHOOL",
+        "SELEKSI PMDK 2026",
+        "ANDAI KU BUKAN IDOLA",
+        "JKT48 FIGHT: LOVE DREAM PASSION",
+        "BUY MEMBERSHIP SPECIAL RAMADAN (1 BULAN)"
+    ];
+
+    // Fungsi menampilkan pilihan di Dropdown User
+    function renderUserSelect() {
+        const select = document.getElementById('showSelect');
+        select.innerHTML = "";
+        daftarShow.forEach(show => {
+            let opt = document.createElement('option');
+            opt.value = show;
+            opt.innerHTML = show;
+            select.appendChild(opt);
+        });
+    }
+
+    // Fungsi menampilkan list edit di Panel Admin
+    function renderAdminList() {
+        const container = document.getElementById('adminInputList');
+        container.innerHTML = "";
+        daftarShow.forEach((show, index) => {
+            const div = document.createElement('div');
+            div.className = 'show-item';
+            div.innerHTML = `
+                <input type="text" value="${show}" class="input-show-name">
+                <button class="btn-del" onclick="hapusShow(${index})">X</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function tambahInputShow() {
+        const container = document.getElementById('adminInputList');
+        const div = document.createElement('div');
+        div.className = 'show-item';
+        div.innerHTML = `
+            <input type="text" placeholder="Nama show baru..." class="input-show-name">
+            <button class="btn-del" onclick="this.parentElement.remove()">X</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function hapusShow(index) {
+        daftarShow.splice(index, 1);
+        renderAdminList();
+    }
+
+    function simpanDanUpdate() {
+        const inputs = document.querySelectorAll('.input-show-name');
+        let dataBaru = [];
+        inputs.forEach(input => {
+            if(input.value.trim() !== "") {
+                dataBaru.push(input.value.trim());
+            }
+        });
+        daftarShow = dataBaru;
+        renderUserSelect();
+        alert("Daftar show berhasil diperbarui!");
+        tutupAdmin();
+    }
+
+    function aksesAdmin() {
+        let pass = prompt("Masukkan Password Admin:");
+        if (pass === PASS_ADMIN) {
+            document.getElementById('adminSection').style.display = 'block';
+            renderAdminList();
+        } else {
+            alert("Password Salah!");
+        }
+    }
+
+    function tutupAdmin() {
+        document.getElementById('adminSection').style.display = 'none';
+    }
+
+    function kirimWA() {
+        const nama = document.getElementById('nama').value;
+        const noHP = document.getElementById('wa').value;
+        const show = document.getElementById('showSelect').value;
+        const noAdmin = "628123456789"; // Ganti ke nomor WA-mu
+
+        if(!nama || !noHP) {
+            alert("Isi data dulu!");
+            return;
+        }
+
+        const pesan = `Halo Admin, saya mau pesan:%0A%0A` +
+                      `*Nama:* ${nama}%0A` +
+                      `*No. WA:* ${noHP}%0A` +
+                      `*Pesanan:* ${show}%0A%0A` +
+                      `Mohon diproses segera!`;
+
+        window.open(`https://wa.me/${noAdmin}?text=${pesan}`, '_blank');
+    }
+
+    // Inisialisasi awal
+    renderUserSelect();
+</script>
+
+</body>
+</html>
